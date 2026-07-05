@@ -1,0 +1,652 @@
+/* =========================================================================
+   MAIN — layout, strata, the throughline, motion.
+   All values come from css/tokens.css. Structure only; copy lives in
+   js/content.js.
+   ========================================================================= */
+
+/* ---- Self-hosted faces (variable) ------------------------------------ */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("../fonts/Vazirmatn-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Besley";
+  src: url("../fonts/Besley-Variable.woff2") format("woff2-variations");
+  font-weight: 400 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Besley";
+  src: url("../fonts/Besley-Variable-Italic.woff2") format("woff2-variations");
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ---- Base ------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  scroll-snap-type: y proximity;
+  scroll-behavior: smooth;
+}
+
+body {
+  position: relative; /* containing block for the full-height throughline */
+  font-family: var(--font-fa);
+  font-size: var(--step-body);
+  line-height: 1.85;
+  color: var(--fg-hi);
+  background-color: var(--stratum-frame);
+  transition: background-color var(--dur-stratum) var(--ease-out);
+  overflow-x: hidden;
+}
+
+/* zero-height probe: JS reads the resolved --spine width from it */
+.spine-probe {
+  position: absolute;
+  inline-size: var(--spine);
+  block-size: 0;
+  visibility: hidden;
+}
+
+/* Latin-primary rendering: Besley leads the stack for English text */
+html[lang="en"] body {
+  font-family: var(--font-display-latin);
+  line-height: 1.7;
+}
+
+/* Body background follows the stratum currently in view (set by JS) */
+body[data-stratum="root"]      { background-color: var(--stratum-root); }
+body[data-stratum="synthesis"] { background-color: var(--stratum-synthesis); }
+body[data-stratum="method"]    { background-color: var(--stratum-method); }
+
+::selection {
+  background: var(--brass);
+  color: var(--ink);
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+/* ---- Skip link & focus ------------------------------------------------ */
+.skip-link {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -300%);
+  z-index: 60;
+  padding: 0.5rem 1rem;
+  background: var(--brass);
+  color: var(--ink);
+  border-radius: 2px;
+  text-decoration: none;
+  font-size: var(--step-fine);
+  transition: transform 200ms var(--ease-out);
+}
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass-bright);
+  outline-offset: 3px;
+}
+
+/* ---- Header ------------------------------------------------------------ */
+.site-head {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem var(--gutter);
+  color: var(--fg-mid);
+  transition: color var(--dur-stratum) var(--ease-out);
+  pointer-events: none; /* children re-enable */
+}
+body[data-stratum="method"] .site-head {
+  color: var(--ink-mid);
+}
+
+.wordmark {
+  pointer-events: auto;
+  font-size: var(--step-fine);
+  font-weight: 560;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.lang-toggle {
+  pointer-events: auto;
+  font-family: var(--font-fa);
+  font-size: var(--step-fine);
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.45em 0.95em;
+  cursor: pointer;
+  transition: color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+.lang-toggle:hover {
+  color: var(--brass-bright);
+}
+body[data-stratum="method"] .lang-toggle:hover {
+  color: var(--brass);
+}
+
+/* ---- The Throughline ----------------------------------------------------
+   A single SVG spanning the whole document. JS measures the gate anchors,
+   builds the path, and drives stroke-dashoffset from scroll. Two strokes
+   share one path: a faint dashed underlay (where the line is going) and
+   the drawn brass line (where it has been). */
+.throughline {
+  position: absolute;
+  inset: 0;
+  z-index: 3; /* above stratum backgrounds; path stays in the spine gutter */
+  pointer-events: none;
+}
+.throughline svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.throughline .line-future {
+  fill: none;
+  stroke: var(--brass);
+  stroke-opacity: 0.22;
+  stroke-width: 1;
+  stroke-dasharray: 2 7;
+}
+.throughline .line-drawn {
+  fill: none;
+  stroke: var(--brass);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+.throughline .gate-node circle {
+  fill: var(--ink);
+  stroke: var(--brass);
+  stroke-width: 1.25;
+  transition: fill var(--dur-stratum) var(--ease-out);
+}
+.throughline .gate-node text {
+  fill: var(--brass-bright);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-anchor: middle;
+}
+.throughline .gate-node {
+  opacity: 0;
+  transition: opacity 700ms var(--ease-out);
+}
+.throughline .gate-node.is-lit {
+  opacity: 1;
+}
+/* the final node sits on bone */
+.throughline .gate-node--end circle {
+  fill: var(--brass);
+}
+
+/* ---- Acts ---------------------------------------------------------------
+   Each act is one stratum: min one viewport tall, snap-aligned, content
+   offset inline-start of the spine. */
+main {
+  position: relative;
+  z-index: 2;
+}
+
+.act {
+  min-height: 100svh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(4.5rem, 12vh, 7rem);
+  padding-inline-start: calc(var(--spine) + clamp(1.5rem, 5vw, 4.5rem));
+  padding-inline-end: var(--gutter);
+}
+
+/* Gate kicker: the letter's meaning + act label, set small beside the line */
+.gate-kicker {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75em;
+  margin-block-end: clamp(1.5rem, 4vh, 2.5rem);
+  font-size: var(--step-label);
+  color: var(--fg-low);
+}
+.gate-kicker .gate-word {
+  font-family: var(--font-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+html[lang="fa"] .gate-kicker .gate-word {
+  font-family: var(--font-fa);
+  letter-spacing: 0.14em;
+  font-weight: 500;
+}
+.gate-kicker .act-label {
+  font-weight: 600;
+  color: var(--fg-mid);
+  font-size: var(--step-fine);
+}
+
+/* Act theses */
+.act-thesis {
+  font-size: var(--step-act);
+  line-height: 1.45;
+  font-weight: 740;
+  max-width: 24ch;
+  text-wrap: balance;
+  margin-block-end: clamp(2.25rem, 6vh, 4rem);
+}
+html[lang="en"] .act-thesis {
+  font-weight: 560;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Act 1 · FRAME ------------------------------------------------------ */
+.act--frame {
+  justify-content: flex-end;
+  gap: clamp(2rem, 6vh, 4rem);
+}
+.act--frame .gate-kicker {
+  margin-block-end: auto; /* kicker holds the top; the thesis sits low */
+}
+
+.frame-kicker {
+  font-size: clamp(0.95rem, 3vw, 1.2rem);
+  color: var(--fg-mid);
+  font-weight: 400;
+}
+
+.frame-headline {
+  font-size: var(--step-thesis);
+  line-height: 1.3;
+  font-weight: 830;
+  max-width: 14ch;
+  text-wrap: balance;
+}
+html[lang="en"] .frame-headline {
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  max-width: 13ch;
+}
+/* each headline line reveals from a clipped wrapper */
+.frame-headline .line {
+  display: block;
+  overflow: hidden;
+}
+.frame-headline .line > span {
+  display: block;
+}
+
+.frame-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4em 1em;
+  font-size: var(--step-fine);
+}
+.frame-sub .name {
+  color: var(--brass-bright);
+  font-weight: 620;
+  letter-spacing: 0.04em;
+}
+.frame-sub .role {
+  color: var(--fg-mid);
+}
+
+.frame-cue {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  font-size: var(--step-label);
+  letter-spacing: 0.1em;
+  color: var(--fg-low);
+}
+.frame-cue::before {
+  content: "";
+  inline-size: 1px;
+  block-size: 2.6em;
+  background: linear-gradient(to bottom, transparent, var(--brass));
+}
+
+/* ---- Act 2 · ROOT -------------------------------------------------------- */
+.root-blocks {
+  display: grid;
+  gap: clamp(2rem, 5vh, 3rem);
+  max-width: var(--measure-wide);
+}
+@media (min-width: 900px) {
+  .root-blocks {
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+}
+
+.root-block {
+  border-block-start: 1px solid var(--hairline);
+  padding-block-start: 1.1rem;
+  max-width: var(--measure);
+}
+.root-block .era {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  letter-spacing: 0.08em;
+  color: var(--brass);
+  margin-block-end: 0.9rem;
+}
+html[lang="fa"] .root-block .era {
+  font-family: var(--font-fa);
+  font-weight: 500;
+}
+.root-block h3 {
+  font-size: var(--step-title);
+  font-weight: 700;
+  line-height: 1.5;
+  margin-block-end: 0.6rem;
+}
+html[lang="en"] .root-block h3 {
+  font-weight: 600;
+  line-height: 1.3;
+}
+.root-block p {
+  color: var(--fg-mid);
+  font-size: var(--step-body);
+}
+.root-block .proof {
+  color: var(--bone);
+  margin-block-start: 0.8rem;
+}
+.root-block .note {
+  margin-block-start: 0.8rem;
+  font-size: var(--step-fine);
+  color: var(--fg-low);
+}
+
+/* ---- Act 3 · SYNTHESIS ---------------------------------------------------
+   Ledger rows: field + engagements, hairline-ruled — precise anchors,
+   never "big number + gradient". */
+.synth-ledger {
+  max-width: var(--measure-wide);
+  border-block-start: 1px solid var(--hairline);
+}
+.synth-row {
+  display: grid;
+  gap: 0.5rem 3rem;
+  padding-block: clamp(1.3rem, 3.5vh, 2rem);
+  border-block-end: 1px solid var(--hairline);
+}
+@media (min-width: 760px) {
+  .synth-row {
+    grid-template-columns: minmax(14ch, 18rem) 1fr;
+  }
+}
+.synth-row .field {
+  font-size: var(--step-title);
+  font-weight: 700;
+  line-height: 1.5;
+}
+html[lang="en"] .synth-row .field {
+  font-weight: 600;
+  line-height: 1.3;
+}
+.synth-row .engagements {
+  color: var(--fg-mid);
+  max-width: var(--measure);
+}
+
+.synth-coda {
+  margin-block-start: clamp(2rem, 5vh, 3rem);
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  color: var(--bone);
+  font-weight: 620;
+}
+html[lang="en"] .synth-coda {
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* ---- Act 4 · METHOD + INVITATION ------------------------------------------
+   The bone stratum. The section carries its own light background so its
+   ink text is never caught on a dark body mid-transition; the top rule is
+   the surface line the throughline breaks through. */
+.act--method {
+  background: var(--stratum-method);
+  color: var(--ink-hi);
+  border-block-start: 1px solid var(--brass);
+}
+.act--method .gate-kicker {
+  color: var(--ink-low);
+}
+.act--method .gate-kicker .act-label {
+  color: var(--ink-mid);
+}
+
+.method-grid {
+  display: grid;
+  gap: clamp(2rem, 5vh, 3rem);
+  max-width: var(--measure-wide);
+  margin-block-end: clamp(3.5rem, 9vh, 6rem);
+}
+@media (min-width: 900px) {
+  .method-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+.method-col h3 {
+  font-size: var(--step-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ink-low);
+  margin-block-end: 1rem;
+  padding-block-end: 0.5rem;
+  border-block-end: 1px solid var(--hairline-on-bone);
+}
+html[lang="fa"] .method-col h3 {
+  letter-spacing: 0.1em;
+  font-size: var(--step-fine);
+}
+
+.framework-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 0;
+  font-size: var(--step-title);
+  font-weight: 640;
+  line-height: 1.6;
+}
+html[lang="en"] .framework-list {
+  font-style: italic;
+  font-weight: 540;
+}
+.framework-list li:not(:last-child)::after {
+  content: "·";
+  color: var(--brass);
+  margin-inline: 0.55em;
+  font-style: normal;
+}
+
+.book {
+  margin-block-end: 1.1rem;
+}
+.book .book-name {
+  font-weight: 700;
+}
+html[lang="en"] .book .book-name {
+  font-style: italic;
+  font-weight: 600;
+}
+.book .book-desc {
+  display: block;
+  color: var(--ink-mid);
+  font-size: var(--step-fine);
+  margin-block-start: 0.15rem;
+}
+.book-upcoming {
+  font-size: var(--step-fine);
+  color: var(--ink-low);
+}
+
+.credential-list {
+  list-style: none;
+  padding: 0;
+  font-size: var(--step-fine);
+  color: var(--ink-mid);
+}
+.credential-list li {
+  padding-block: 0.55rem;
+}
+.credential-list li + li {
+  border-block-start: 1px solid var(--hairline-on-bone);
+}
+
+/* The close — a designed ending, not a footer */
+.method-close {
+  margin-block-start: auto;
+  padding-block-start: clamp(2rem, 6vh, 4rem);
+}
+.method-close h2 {
+  font-size: var(--step-close);
+  line-height: 1.25;
+  font-weight: 800;
+  max-width: 16ch;
+  text-wrap: balance;
+  margin-block-end: 1rem;
+}
+html[lang="en"] .method-close h2 {
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+.method-close .close-body {
+  color: var(--ink-mid);
+  max-width: var(--measure);
+  margin-block-end: 2rem;
+}
+
+.cta {
+  display: inline-block;
+  font-family: inherit;
+  font-size: clamp(1rem, 2.8vw, 1.1rem);
+  font-weight: 640;
+  color: var(--bone);
+  background: var(--ink);
+  text-decoration: none;
+  padding: 0.95em 2.1em;
+  border-radius: 2px;
+  border: 1px solid var(--ink);
+  transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out);
+}
+.cta:hover {
+  background: transparent;
+  color: var(--ink-hi);
+}
+.cta .cta-mark {
+  color: var(--brass-bright);
+  margin-inline-start: 0.6em;
+}
+.cta:hover .cta-mark {
+  color: var(--brass);
+}
+
+/* Colophon line under the close — quiet, single line */
+.colophon {
+  margin-block-start: clamp(2.5rem, 7vh, 4.5rem);
+  font-size: var(--step-label);
+  color: var(--ink-low);
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+/* ---- Reveals ---------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(1.4rem);
+  transition:
+    opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Act-1 load sequence: headline lines rise inside clipped wrappers */
+.frame-headline .line > span {
+  transform: translateY(110%);
+  transition: transform 1000ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 140ms + 150ms);
+}
+.is-loaded .frame-headline .line > span {
+  transform: none;
+}
+.frame-kicker,
+.frame-sub,
+.frame-cue {
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.is-loaded .frame-kicker { opacity: 1; }
+.is-loaded .frame-sub    { opacity: 1; transition-delay: 650ms; }
+.is-loaded .frame-cue    { opacity: 1; transition-delay: 1100ms; }
+
+/* ---- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+  body {
+    transition: none;
+  }
+  .reveal,
+  .frame-kicker,
+  .frame-sub,
+  .frame-cue,
+  .frame-headline .line > span {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .throughline .gate-node {
+    opacity: 1;
+    transition: none;
+  }
+  /* JS also detects this and draws the line fully */
+}
+
+/* ---- No-JS fallback ------------------------------------------------------ */
+noscript .nojs {
+  display: block;
+  padding: 20vh var(--gutter);
+  max-width: var(--measure);
+}
