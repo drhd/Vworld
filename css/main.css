@@ -130,6 +130,13 @@ body[data-stratum="method"] .site-head {
   font-weight: 560;
   letter-spacing: 0.02em;
   text-decoration: none;
+  transition: opacity 500ms var(--ease-out), color var(--dur-stratum) var(--ease-out);
+}
+/* Once the visitor leaves Act 1, the wordmark recedes so it never
+   collides with act content mid-scroll. JS sets data-scrolled on <body>. */
+body[data-scrolled="true"] .wordmark {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .lang-toggle {
@@ -214,6 +221,7 @@ main {
 }
 
 .act {
+  position: relative;
   min-height: 100svh;
   scroll-snap-align: start;
   display: flex;
@@ -224,30 +232,32 @@ main {
   padding-inline-end: var(--gutter);
 }
 
-/* Gate kicker: the letter's meaning + act label, set small beside the line */
+/* Gate kicker: the act's name, set small beside the line. The gate
+   letter itself lives in the throughline node level with this. */
 .gate-kicker {
   display: flex;
-  align-items: baseline;
-  gap: 0.75em;
+  align-items: center;
+  gap: 0.7em;
   margin-block-end: clamp(1.5rem, 4vh, 2.5rem);
   font-size: var(--step-label);
-  color: var(--fg-low);
 }
-.gate-kicker .gate-word {
-  font-family: var(--font-mono);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--brass);
-}
-html[lang="fa"] .gate-kicker .gate-word {
-  font-family: var(--font-fa);
-  letter-spacing: 0.14em;
-  font-weight: 500;
+.gate-kicker::before {
+  content: "";
+  inline-size: clamp(1.1rem, 3vw, 1.9rem);
+  block-size: 1px;
+  background: var(--brass);
 }
 .gate-kicker .act-label {
   font-weight: 600;
   color: var(--fg-mid);
-  font-size: var(--step-fine);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: var(--step-label);
+}
+html[lang="fa"] .gate-kicker .act-label {
+  letter-spacing: 0.1em;
+  text-transform: none;
+  font-weight: 500;
 }
 
 /* Act theses */
@@ -273,6 +283,28 @@ html[lang="en"] .act-thesis {
 .act--frame .gate-kicker {
   margin-block-end: auto; /* kicker holds the top; the thesis sits low */
 }
+
+/* Ghosted stratum contours in the upper negative space — the layers the
+   visitor is about to descend through, hinted before the descent begins. */
+.frame-strata {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 62vh;
+  width: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1600ms var(--ease-out) 900ms;
+}
+.frame-strata path {
+  fill: none;
+  stroke: var(--fg-hi);
+  stroke-opacity: 0.06;
+  stroke-width: 1;
+}
+.frame-strata path:nth-child(2) { stroke: var(--brass); stroke-opacity: 0.1; }
+.is-loaded .frame-strata { opacity: 1; }
 
 .frame-kicker {
   font-size: clamp(0.95rem, 3vw, 1.2rem);
@@ -632,10 +664,14 @@ html[lang="en"] .method-close h2 {
   .frame-kicker,
   .frame-sub,
   .frame-cue,
+  .frame-strata,
   .frame-headline .line > span {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .wordmark {
+    transition: opacity 1ms;
   }
   .throughline .gate-node {
     opacity: 1;

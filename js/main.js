@@ -42,17 +42,23 @@
     toggle.textContent = t.ui.langToggle;
     toggle.setAttribute("aria-label", t.ui.langToggleAria);
 
-    const kicker = (i, label) => `
-      <p class="gate-kicker">
-        <span class="gate-word">${g[i].letter} — ${g[i][lang]}</span>
-        <span class="act-label">${label}</span>
-      </p>`;
+    /* One phrase per act: the gate letter lives in the throughline node
+       beside it, so the kicker carries only the act's name. Gate meanings
+       (SITE.gates[i][lang]) stay in the data, ready for the real EDGE
+       definitions. */
+    const kicker = (label) => `
+      <p class="gate-kicker"><span class="act-label">${label}</span></p>`;
 
     /* Act 1 — FRAME */
     const f = acts.frame;
     const act1 = `
       <section class="act act--frame" id="act-frame" data-stratum="frame" aria-label="${f.label}">
-        ${kicker(0, f.label)}
+        <svg class="frame-strata" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path vector-effect="non-scaling-stroke" d="M0 24 C 22 22.6, 38 25.2, 58 24 S 86 22.8, 100 24.4" />
+          <path vector-effect="non-scaling-stroke" d="M0 33 C 18 34.4, 42 31.8, 63 33.2 S 88 34.2, 100 32.8" />
+          <path vector-effect="non-scaling-stroke" d="M0 42 C 26 40.8, 44 43.4, 66 42 S 90 41, 100 42.6" />
+        </svg>
+        ${kicker(f.label)}
         <p class="frame-kicker">${f.kicker}</p>
         <h1 class="frame-headline">
           ${f.headline.map((l, i) => `<span class="line"><span style="--i:${i}">${l}</span></span>`).join("")}
@@ -68,7 +74,7 @@
     const r = acts.root;
     const act2 = `
       <section class="act act--root" id="act-root" data-stratum="root" aria-label="${r.label}">
-        ${kicker(1, r.label)}
+        ${kicker(r.label)}
         <h2 class="act-thesis reveal">${r.thesis}</h2>
         <div class="root-blocks">
           ${r.blocks.map((b, i) => `
@@ -86,7 +92,7 @@
     const s = acts.synthesis;
     const act3 = `
       <section class="act act--synthesis" id="act-synthesis" data-stratum="synthesis" aria-label="${s.label}">
-        ${kicker(2, s.label)}
+        ${kicker(s.label)}
         <h2 class="act-thesis reveal">${s.thesis}</h2>
         <div class="synth-ledger">
           ${s.rows.map((row, i) => `
@@ -102,7 +108,7 @@
     const m = acts.method;
     const act4 = `
       <section class="act act--method" id="act-method" data-stratum="method" aria-label="${m.label}">
-        ${kicker(3, m.label)}
+        ${kicker(m.label)}
         <h2 class="act-thesis reveal">${m.thesis}</h2>
         <div class="method-grid">
           <div class="method-col reveal" style="--i:1">
@@ -323,6 +329,8 @@
           if (e.isIntersecting) {
             const s = e.target.dataset.stratum;
             document.body.dataset.stratum = s;
+            // wordmark recedes once past Act 1 so it can't overlap content
+            document.body.dataset.scrolled = s === "frame" ? "false" : "true";
             document.querySelector('meta[name="theme-color"]')
               .setAttribute("content", themeColors[s]);
           }
