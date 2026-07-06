@@ -1,0 +1,198 @@
+[
+  {
+    "name": "سارا محمدی",
+    "role": "graphic_designer",
+    "role_label": "طراح گرافیک",
+    "location_label": "ساری",
+    "platform": "instagram",
+    "handle": "@sara.designs",
+    "profile_url": "https://instagram.com/sara.designs",
+    "bio": "طراح گرافیک و لوگو | ۶ سال سابقه | طراحی هویت بصری برای برندهای محلی ساری",
+    "skills": ["طراحی لوگو", "هویت بصری", "پوستر", "Adobe Illustrator", "Photoshop"],
+    "portfolio_url": "https://behance.net/saradesigns",
+    "rating": 4.8,
+    "followers": 12400,
+    "contact": {
+      "instagram": "@sara.designs",
+      "telegram": "@sara_designs",
+      "phone": "+98 911 000 1122",
+      "email": "sara.designs@example.com"
+    },
+    "evidence": "بیو صراحتاً طراح گرافیک ساکن ساری را نشان می‌دهد"
+  },
+  {
+    "name": "رضا کریمی",
+    "role": "graphic_designer",
+    "role_label": "طراح گرافیک",
+    "location_label": "ساری",
+    "platform": "telegram",
+    "handle": "@rk_graphics",
+    "profile_url": "https://t.me/rk_graphics",
+    "bio": "استودیو گرافیک رضا | طراحی بنر، کاتالوگ و بسته‌بندی | تحویل سریع",
+    "skills": ["بنر", "کاتالوگ", "بسته‌بندی", "CorelDRAW"],
+    "portfolio_url": "",
+    "rating": 4.5,
+    "followers": 3200,
+    "contact": {
+      "telegram": "@rk_graphics",
+      "phone": "+98 912 333 4455"
+    },
+    "evidence": "کانال تلگرام فعال با نمونه‌کارهای گرافیکی در ساری"
+  },
+  {
+    "name": "مینا اسدی",
+    "role": "graphic_designer",
+    "role_label": "طراح گرافیک",
+    "location_label": "تهران",
+    "platform": "linkedin",
+    "handle": "mina-asadi",
+    "profile_url": "https://linkedin.com/in/mina-asadi",
+    "bio": "Senior Graphic & Brand Designer | ۹ سال سابقه | همکاری از راه دور",
+    "skills": ["Branding", "Figma", "Illustrator", "Art Direction"],
+    "portfolio_url": "https://dribbble.com/minaasadi",
+    "rating": 4.9,
+    "followers": 8700,
+    "contact": {
+      "linkedin": "https://linkedin.com/in/mina-asadi",
+      "email": "mina.asadi@example.com"
+    },
+    "evidence": "پروفایل لینکدین با عنوان Senior Graphic Designer و امکان کار ریموت"
+  },
+  {
+    "name": "امیر حسینی",
+    "role": "digital_marketer",
+    "role_label": "دیجیتال مارکتر",
+    "location_label": "تهران",
+    "platform": "linkedin",
+    "handle": "amir-hosseini-mkt",
+    "profile_url": "https://linkedin.com/in/amir-hosseini-mkt",
+    "bio": "Performance Marketing Lead | Google Ads & Meta Ads | رشد فروش e-commerce",
+    "skills": ["Google Ads", "Meta Ads", "Analytics", "CRO", "استراتژی محتوا"],
+    "portfolio_url": "",
+    "rating": 4.7,
+    "followers": 15600,
+    "contact": {
+      "linkedin": "https://linkedin.com/in/amir-hosseini-mkt",
+      "telegram": "@amir_growth",
+      "email": "amir.mkt@example.com"
+    },
+    "evidence": "سابقه performance marketing با تمرکز بر تبلیغات پولی"
+  },
+  {
+    "name": "نگار رحیمی",
+    "role": "digital_marketer",
+    "role_label": "دیجیتال مارکتر",
+    "location_label": "اصفهان",
+    "platform": "instagram",
+    "handle": "@negar.marketing",
+    "profile_url": "https://instagram.com/negar.marketing",
+    "bio": "مشاور دیجیتال مارکتینگ | رشد پیج و فروش اینستاگرام | آموزش و اجرا",
+    "skills": ["اینستاگرام مارکتینگ", "کمپین", "تولید محتوا", "ایمیل مارکتینگ"],
+    "portfolio_url": "https://negar-marketing.example.com",
+    "rating": 4.6,
+    "followers": 43000,
+    "contact": {
+      "instagram": "@negar.marketing",
+      "telegram": "@negar_mkt",
+      "website": "https://negar-marketing.example.com"
+    },
+    "evidence": "پیج فعال آموزش و اجرای دیجیتال مارکتینگ با تعامل بالا"
+  },
+  {
+    "name": "کاوه صادقی",
+    "role": "digital_marketer",
+    "role_label": "دیجیتال مارکتر",
+    "location_label": "ساری",
+    "platform": "telegram",
+    "handle": "@kaveh_digital",
+    "profile_url": "https://t.me/kaveh_digital",
+    "bio": "دیجیتال مارکتر مازندران | سئو + تبلیغات + مدیریت شبکه‌های اجتماعی کسب‌وکارهای محلی",
+    "skills": ["سئو", "تبلیغات", "مدیریت اینستاگرام", "گوگل مای بیزینس"],
+    "portfolio_url": "",
+    "rating": 4.4,
+    "followers": 5600,
+    "contact": {
+      "telegram": "@kaveh_digital",
+      "phone": "+98 911 222 3344",
+      "instagram": "@kaveh.digital"
+    },
+    "evidence": "فعال در حوزه دیجیتال مارکتینگ کسب‌وکارهای محلی مازندران/ساری"
+  },
+  {
+    "name": "الهام نوری",
+    "role": "ui_ux_designer",
+    "role_label": "طراح رابط کاربری (UI/UX)",
+    "location_label": "تهران",
+    "platform": "linkedin",
+    "handle": "elham-nouri",
+    "profile_url": "https://linkedin.com/in/elham-nouri",
+    "bio": "Product Designer | Figma | طراحی اپلیکیشن‌های فین‌تک",
+    "skills": ["Figma", "Design System", "User Research", "Prototyping"],
+    "portfolio_url": "https://dribbble.com/elhamnouri",
+    "rating": 4.8,
+    "followers": 6200,
+    "contact": {
+      "linkedin": "https://linkedin.com/in/elham-nouri",
+      "email": "elham.nouri@example.com"
+    },
+    "evidence": "پروفایل تخصصی طراحی محصول با نمونه‌کار در Dribbble"
+  },
+  {
+    "name": "حسام یوسفی",
+    "role": "web_developer",
+    "role_label": "برنامه‌نویس وب",
+    "location_label": "مشهد",
+    "platform": "linkedin",
+    "handle": "hesam-yousefi",
+    "profile_url": "https://linkedin.com/in/hesam-yousefi",
+    "bio": "Full-Stack Developer | React + Node.js + Python | Remote",
+    "skills": ["React", "Node.js", "Python", "PostgreSQL", "AWS"],
+    "portfolio_url": "https://github.com/hesamyousefi",
+    "rating": 4.9,
+    "followers": 2100,
+    "contact": {
+      "linkedin": "https://linkedin.com/in/hesam-yousefi",
+      "telegram": "@hesam_dev",
+      "email": "hesam.dev@example.com"
+    },
+    "evidence": "توسعه‌دهنده فول‌استک با گیت‌هاب فعال و امکان کار ریموت"
+  },
+  {
+    "name": "پریسا اکبری",
+    "role": "photographer",
+    "role_label": "عکاس",
+    "location_label": "ساری",
+    "platform": "instagram",
+    "handle": "@parisa.photography",
+    "profile_url": "https://instagram.com/parisa.photography",
+    "bio": "عکاس تبلیغاتی و پرتره | ساری و مازندران | عکاسی محصول و برند",
+    "skills": ["عکاسی محصول", "پرتره", "تبلیغاتی", "روتوش"],
+    "portfolio_url": "",
+    "rating": 4.7,
+    "followers": 21000,
+    "contact": {
+      "instagram": "@parisa.photography",
+      "phone": "+98 911 555 6677"
+    },
+    "evidence": "پیج عکاسی تبلیغاتی فعال در ساری با نمونه‌کار محصول"
+  },
+  {
+    "name": "بهار موسوی",
+    "role": "social_media_manager",
+    "role_label": "مدیر شبکه‌های اجتماعی",
+    "location_label": "ساری",
+    "platform": "instagram",
+    "handle": "@bahar.social",
+    "profile_url": "https://instagram.com/bahar.social",
+    "bio": "ادمین و مدیر پیج اینستاگرام | تولید محتوا و تقویم محتوایی | ساری",
+    "skills": ["مدیریت پیج", "تقویم محتوا", "کپشن‌نویسی", "استوری", "ریلز"],
+    "portfolio_url": "",
+    "rating": 4.5,
+    "followers": 9800,
+    "contact": {
+      "instagram": "@bahar.social",
+      "telegram": "@bahar_social"
+    },
+    "evidence": "مدیر شبکه اجتماعی فعال در ساری با نمونه پیج‌های مدیریت‌شده"
+  }
+]

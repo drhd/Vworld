@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vworld"
+version = "0.1.0"
+description = "ایجنت پیدا کردن متخصص در تلگرام، اینستاگرام، لینکدین و وب"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[project.optional-dependencies]
+llm = ["anthropic>=0.40"]
+telegram = ["telethon>=1.34", "python-telegram-bot>=20.0"]
+instagram = ["instagrapi>=2.1"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+vworld = "vworld.cli:main"
+
+[tool.setuptools]
+packages = ["vworld", "vworld.connectors"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

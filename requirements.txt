@@ -1,0 +1,20 @@
+# Core: none. Vworld runs on the Python standard library alone (offline mode).
+
+# ---- Optional extras, each enables one connector or interface ----
+# Enable the Claude LLM (smarter parsing + result summary):
+#   ANTHROPIC_API_KEY=...
+# anthropic>=0.40
+
+# Telegram search connector (TELEGRAM_API_ID / TELEGRAM_API_HASH):
+# telethon>=1.34
+
+# Instagram unofficial connector (INSTAGRAM_USERNAME / INSTAGRAM_PASSWORD):
+# instagrapi>=2.1
+
+# LinkedIn + web-search connectors (SERPAPI_KEY): standard-library urllib, no package needed.
+
+# Telegram chat bot front-end (TELEGRAM_BOT_TOKEN):
+# python-telegram-bot>=20.0
+
+# Testing:
+# pytest>=7.0
