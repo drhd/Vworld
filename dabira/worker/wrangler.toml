@@ -1,0 +1,15 @@
+# فقط اگر خواستی با خط فرمان (wrangler) دیپلوی کنی — از داشبورد هم بدون این فایل می‌شود
+name = "dabira"
+main = "worker.js"
+compatibility_date = "2026-07-01"
+
+# بعد از ساخت KV در داشبورد، id را اینجا بگذار:
+# [[kv_namespaces]]
+# binding = "DABIRA_KV"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# متغیرهای محرمانه را با دستور زیر ست کن (داخل فایل نگذار):
+#   npx wrangler secret put BOT_TOKEN
+#   npx wrangler secret put GROQ_API_KEY
+#   npx wrangler secret put GEMINI_API_KEY
+#   npx wrangler secret put WEBHOOK_SECRET
