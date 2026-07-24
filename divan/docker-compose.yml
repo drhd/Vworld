@@ -1,0 +1,84 @@
+# ═══════════════════════════════════════════════════════════
+#  دیوان — زیرساخت اجرا
+#  قاعده‌ی ضدکرش: هر سرویس کانتینر جدا. کرش یکی، بقیه زنده می‌مانند.
+#
+#  اجرا:   cp .env.example .env   (پرش کن)   →   docker compose up -d --build
+#  لاگ:    docker compose logs -f bot
+#
+#  توجه: سرویس‌های bot/worker به کد app/ نیاز دارند (اسپرینت ۱).
+#  db و redis همین حالا مستقل بالا می‌آیند.
+# ═══════════════════════════════════════════════════════════
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - divan_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - divan_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    build: .
+    restart: unless-stopped
+    command: python -m app.bot
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - divan_attachments:/data/attachments
+
+  worker:
+    build: .
+    restart: unless-stopped
+    command: python -m app.worker
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - divan_attachments:/data/attachments
+
+  # ── بکاپ خودکار شبانه (اسپرینت ۲) ──────────────────────
+  # backup:
+  #   image: postgres:16-alpine
+  #   restart: unless-stopped
+  #   entrypoint: /backup.sh
+  #   volumes: [ ./backups:/backups, ./scripts/backup.sh:/backup.sh:ro ]
+
+  # ── n8n خودمیزبان (فاز ایجنت — گام ۴) ─────────────────
+  # n8n:
+  #   image: n8nio/n8n:latest
+  #   restart: unless-stopped
+  #   ports: [ "5678:5678" ]
+  #   volumes: [ divan_n8ndata:/home/node/.n8n ]
+
+volumes:
+  divan_pgdata:
+  divan_redisdata:
+  divan_attachments:
+  # divan_n8ndata:

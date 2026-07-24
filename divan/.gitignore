@@ -1,0 +1,32 @@
+# ── secrets (هرگز commit نمی‌شود) ──
+.env
+*.env
+!.env.example
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── داده و بکاپ (روی سرور می‌مانند، نه در گیت) ──
+/data/
+backups/
+*.sqlite
+*.db
+attachments/
+
+# ── Node / Mini App (فاز اپ) ──
+node_modules/
+dist/
+.vite/
+
+# ── محیط توسعه ──
+.DS_Store
+*.log
+.idea/
+.vscode/
